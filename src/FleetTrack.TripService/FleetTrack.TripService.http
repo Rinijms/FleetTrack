@@ -1,0 +1,6 @@
+@FleetTrack.TripService_HostAddress = http://localhost:5189
+
+GET {{FleetTrack.TripService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
