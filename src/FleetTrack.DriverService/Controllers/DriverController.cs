@@ -1,0 +1,46 @@
+using FleetTrack.DriverService.Models;
+using FleetTrack.DriverService.Repositories;
+using Microsoft.AspNetCore.Mvc;
+
+namespace FleetTrack.DriverService.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class DriverController : ControllerBase
+    {
+        private readonly IDriverRepository _repo;
+
+        public DriverController(IDriverRepository repo)
+        {
+            _repo = repo;
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return Ok(_repo.GetAll());
+        }
+
+        [HttpGet("{driverCode}")]
+        public IActionResult GetByDriverCode(string driverCode)
+        {
+            var driver = _repo.GetByDriverCode(driverCode);
+            if (driver == null)
+                return NotFound();
+
+            return Ok(driver);
+        }
+
+        [HttpPost]
+        public IActionResult CreateDriver([FromBody] CreateDriverRequest request)
+        {
+            var driver = new Driver{
+                Name=request.Name,
+                Phone=request.Phone
+            };
+            
+            var created = _repo.Add(driver);
+            return CreatedAtAction(nameof(GetByDriverCode), new { driverCode = created.DriverCode }, created);
+        }
+    }
+}
