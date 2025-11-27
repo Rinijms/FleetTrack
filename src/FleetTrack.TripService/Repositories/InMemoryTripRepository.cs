@@ -27,5 +27,28 @@ namespace FleetTrack.TripService.Repositories
                 .Select(_ => chars[random.Next(chars.Length)])
                 .ToArray());
         }
+        public bool AssignDriver(string tripCode, string driverCode)
+        {
+            var trip = _trips.FirstOrDefault(t => t.TripCode == tripCode);
+            if (trip == null)
+                return false;
+
+            trip.DriverCode = driverCode;
+            trip.Status = "DriverAssigned";
+            return true;
+        } 
+        public Trip? Update(Trip trip)
+        {
+            var existing = _trips.FirstOrDefault(t => t.TripCode == trip.TripCode);
+            if (existing == null)
+                return null;
+
+            existing.DriverCode = trip.DriverCode;
+            existing.StartTime = trip.StartTime;
+            existing.EndTime = trip.EndTime;
+
+            return existing;
+        }
+
     }
 }

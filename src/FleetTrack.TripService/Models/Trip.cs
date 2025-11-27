@@ -4,9 +4,14 @@ namespace FleetTrack.TripService.Models
     {
         public Guid TripId { get; set; } = Guid.NewGuid();
         public string TripCode { get; set; } = string.Empty;
-        public string VehicleId { get; set; } = string.Empty;
+
+        public string? DriverCode { get; set; }  =string.Empty;  // NEW
+        public string Status { get; set; } = "Pending";   // NEW
+
+        public string VehicleCode { get; set; } = string.Empty;
         public string StartLocation { get; set; } = string.Empty;
         public string EndLocation { get; set; } = string.Empty;
+
         public DateTime StartTime { get; set; } = DateTime.UtcNow;
         public DateTime? EndTime { get; set; }
     }

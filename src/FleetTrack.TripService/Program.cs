@@ -8,6 +8,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<FleetTrack.TripService.Repositories.ITripRepository,
 FleetTrack.TripService.Repositories.InMemoryTripRepository>();
 
+builder.Services.AddHttpClient<IDriverClient, DriverClient>(c =>
+{
+    c.BaseAddress = new Uri("http://localhost:5009"); // DriverService URL
+});
+
+builder.Services.AddScoped<FleetTrack.TripService.Services.ITripAssignmentService, FleetTrack.TripService.Services.TripAssignmentService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

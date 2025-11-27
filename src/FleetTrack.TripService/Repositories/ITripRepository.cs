@@ -7,5 +7,7 @@ namespace FleetTrack.TripService.Repositories
         IEnumerable<Trip> GetAll();
         Trip? GetByTripCode(string tripcode);
         Trip Add(Trip trip);
+        bool AssignDriver(string tripCode, string driverCode);
+        public Trip? Update(Trip trip);
     }
 }
