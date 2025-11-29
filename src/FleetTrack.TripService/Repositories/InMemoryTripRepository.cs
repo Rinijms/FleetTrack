@@ -2,7 +2,7 @@ using FleetTrack.TripService.Models;
 
 namespace FleetTrack.TripService.Repositories
 {
-    public class InMemoryTripRepository : ITripRepository
+    public class InMemoryTripRepository
     {
         private readonly List<Trip> _trips = new();
 

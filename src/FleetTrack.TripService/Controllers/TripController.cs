@@ -55,7 +55,7 @@ namespace FleetTrack.TripService.Controllers
 
             var result = _repo.AssignDriver(tripCode, driverCode);
 
-            if (!result)
+            if (result==null)
                 return NotFound("Trip not found.");
 
             return Ok(new { message = "Driver assigned successfully." });
