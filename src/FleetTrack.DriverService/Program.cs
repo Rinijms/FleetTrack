@@ -1,11 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+using FleetTrack.DriverService.Repositories;
+using FleetTrack.DriverService.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers + Swagger
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<DriverDbContext> (options=>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DriverServiceDb")));
+
 //Repository
-builder.Services.AddSingleton<FleetTrack.DriverService.Repositories.IDriverRepository, FleetTrack.DriverService.Repositories.InMemoryDriverRepository>();
+builder.Services.AddScoped<IDriverRepository, EFDriverRepository>();
 
 var app = builder.Build();
 

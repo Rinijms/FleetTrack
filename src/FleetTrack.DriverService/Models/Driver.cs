@@ -2,17 +2,13 @@ namespace FleetTrack.DriverService.Models
 {
     public class Driver
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public string DriverCode { get; set; } = string.Empty;
+        public int Id { get; set; }
+        public required string DriverCode { get; set; }
 
-        public string Name { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
+        public required string Name { get; set; }
+        public required string Phone { get; set; }
 
-        private string _status = "Active";
-        public string Status
-        {
-            get => _status;
-            set => _status = value ?? "Active";
-        }
+        public required string Status { get; set; } = "Active"; //Active, Busy, Offline
+         
     }
 }

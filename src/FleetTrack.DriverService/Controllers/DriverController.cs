@@ -36,7 +36,9 @@ namespace FleetTrack.DriverService.Controllers
         {
             var driver = new Driver{
                 Name=request.Name,
-                Phone=request.Phone
+                Phone=request.Phone,
+                DriverCode=string.Empty,
+                Status=string.Empty
             };
             
             var created = _repo.Add(driver);

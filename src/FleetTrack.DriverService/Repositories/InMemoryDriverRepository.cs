@@ -2,7 +2,7 @@ using FleetTrack.DriverService.Models;
 
 namespace FleetTrack.DriverService.Repositories
 {
-    public class InMemoryDriverRepository : IDriverRepository
+    public class InMemoryDriverRepository
     {
         private readonly List<Driver> _drivers = new();
         private int _sequence = 1;
@@ -10,7 +10,7 @@ namespace FleetTrack.DriverService.Repositories
         public Driver Add(Driver driver)
         {
             driver.Status ="Active";
-            driver.Id = Guid.NewGuid(); 
+            //driver.Id = Guid.NewGuid(); 
             driver.DriverCode = $"DRV-{_sequence:D4}";
             _sequence++;
 
