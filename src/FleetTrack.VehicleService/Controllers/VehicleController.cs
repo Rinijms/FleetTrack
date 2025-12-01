@@ -36,7 +36,9 @@ public class VehicleController : ControllerBase
         var vehicle = new Vehicle
         {
             RegistrationNumber = req.RegistrationNumber,
-            Type = req.Type
+            Type = req.Type,
+            VehicleCode = string.Empty,
+            Status = string.Empty
             // Id/VehicleCode/Status handled by repository
         };
 

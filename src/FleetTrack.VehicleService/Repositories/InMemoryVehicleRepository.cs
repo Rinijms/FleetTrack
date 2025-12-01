@@ -2,14 +2,14 @@ using FleetTrack.VehicleService.Models;
 
 namespace FleetTrack.VehicleService.Repositories;
 
-public class InMemoryVehicleRepository : IVehicleRepository
+public class InMemoryVehicleRepository
 {
     private readonly List<Vehicle> _vehicles = new();
     private int _sequence = 1;
 
     public Vehicle Add(Vehicle vehicle)
     {
-        vehicle.Id = Guid.NewGuid();
+        //vehicle.Id = Guid.NewGuid();
         vehicle.VehicleCode = $"VH-{_sequence:D4}";
         _sequence++;
         // default status if not provided

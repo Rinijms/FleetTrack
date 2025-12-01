@@ -1,3 +1,7 @@
+using FleetTrack.VehicleService.Repositories;
+using Microsoft.EntityFrameworkCore; 
+using FleetTrack.VehicleService.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -5,8 +9,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<FleetTrack.VehicleService.Repositories.IVehicleRepository,
-FleetTrack.VehicleService.Repositories.InMemoryVehicleRepository>();
+builder.Services.AddScoped<IVehicleRepository,EFVehicleRepository>();
+
+builder.Services.AddDbContext<VehicleDbContext> (options=>
+options.UseSqlServer(builder.Configuration.GetConnectionString("VehicleServiceDb")));
 
 var app = builder.Build();
 
