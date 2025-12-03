@@ -1,5 +1,6 @@
 using FleetTrack.VehicleService.Models;
 using FleetTrack.VehicleService.Data;
+using FleetTrack.VehicleService.Enums;
 
 namespace FleetTrack.VehicleService.Repositories;
 
@@ -13,7 +14,7 @@ public class EFVehicleRepository : IVehicleRepository
 
     public Vehicle Add(Vehicle vehicle)
     {        
-        vehicle.Status = "Active";    
+        vehicle.Status = VehicleStatus.Active;    
         _db.Vehicles.Add(vehicle);
         _db.SaveChanges();
 
@@ -29,14 +30,45 @@ public class EFVehicleRepository : IVehicleRepository
     public Vehicle? GetByVehicleCode(string vehicleCode) =>
         _db.Vehicles.FirstOrDefault(v => v.VehicleCode == vehicleCode);
 
-    public bool UpdateStatus(string vehicleCode, string newStatus)
+    public bool UpdateStatus(string vehicleCode, VehicleStatus newStatus)
     {
-        var v = GetByVehicleCode(vehicleCode);
-        if (v == null) return false;
-        v.Status = newStatus;
+        
+        var vehicle = GetByVehicleCode(vehicleCode);
+        if (vehicle == null) return false;
 
-        _db.Vehicles.Update(v);
+        var oldStatus = vehicle.Status;
+
+        if (vehicle.Status == newStatus)
+            return false; // No change
+
+        // Update status
+        vehicle.Status = newStatus;     
+        
+        // Add history record
+        var history = new VehicleStatusHistory
+        {
+            VehicleId = vehicle.Id,
+            OldStatus = oldStatus,
+            NewStatus = newStatus,
+            ChangedAt = DateTime.UtcNow
+        };
+
+        _db.VehicleStatusHistory.Add(history);
+        _db.Vehicles.Update(vehicle);
         _db.SaveChanges();
+
         return true;
+    }
+
+    public IEnumerable<VehicleStatusHistory> GetHistory(string vehicleCode)
+    {
+        var vehicle = GetByVehicleCode(vehicleCode);
+        if(vehicle == null)
+            return Enumerable.Empty<VehicleStatusHistory>();
+
+        return _db.VehicleStatusHistory
+            .Where(h => h.VehicleId == vehicle.Id)
+            .OrderByDescending(h => h.ChangedAt)
+            .ToList();
     }
 }

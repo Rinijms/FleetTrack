@@ -2,6 +2,7 @@ using FleetTrack.VehicleService.Models;
 using FleetTrack.VehicleService.DTOs;
 using FleetTrack.VehicleService.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using FleetTrack.VehicleService.Enums;
 
 namespace FleetTrack.VehicleService.Controllers;
 
@@ -38,7 +39,7 @@ public class VehicleController : ControllerBase
             RegistrationNumber = req.RegistrationNumber,
             Type = req.Type,
             VehicleCode = string.Empty,
-            Status = string.Empty
+            Status = VehicleStatus.Active
             // Id/VehicleCode/Status handled by repository
         };
 
@@ -50,10 +51,18 @@ public class VehicleController : ControllerBase
     [HttpPut("{vehicleCode}/status")]
     public IActionResult UpdateStatus(string vehicleCode, [FromBody] string newStatus)
     {
-        if (string.IsNullOrWhiteSpace(newStatus)) return BadRequest(new { error = "newStatus is required in body" });
+        if (!Enum.TryParse<VehicleStatus>(newStatus,true,out var newstatus))
+         return BadRequest(new { error = "Invalid vehicle status" });
 
-        var ok = _repo.UpdateStatus(vehicleCode, newStatus);
+        var ok = _repo.UpdateStatus(vehicleCode, newstatus);
         if (!ok) return NotFound();
         return NoContent();
+    }
+
+    [HttpGet("{vehicleCode}/history")]
+    public IActionResult GetHistory(string vehicleCode)
+    {
+        var history = _repo.GetHistory(vehicleCode);
+        return Ok(history);
     }
 }

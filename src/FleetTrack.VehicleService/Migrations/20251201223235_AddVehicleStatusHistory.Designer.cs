@@ -4,6 +4,7 @@ using FleetTrack.VehicleService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FleetTrack.VehicleService.Migrations
 {
     [DbContext(typeof(VehicleDbContext))]
-    partial class VehicleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251201223235_AddVehicleStatusHistory")]
+    partial class AddVehicleStatusHistory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,8 +37,9 @@ namespace FleetTrack.VehicleService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -61,11 +65,13 @@ namespace FleetTrack.VehicleService.Migrations
                     b.Property<DateTime>("ChangedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("NewStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("NewStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OldStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("OldStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
