@@ -1,4 +1,5 @@
 using FleetTrack.DriverService.Models;
+using FleetTrack.DriverService.Enums;
 
 namespace FleetTrack.DriverService.Repositories
 {
@@ -9,7 +10,7 @@ namespace FleetTrack.DriverService.Repositories
 
         public Driver Add(Driver driver)
         {
-            driver.Status ="Active";
+            driver.Status = DriverStatus.Active;
             //driver.Id = Guid.NewGuid(); 
             driver.DriverCode = $"DRV-{_sequence:D4}";
             _sequence++;

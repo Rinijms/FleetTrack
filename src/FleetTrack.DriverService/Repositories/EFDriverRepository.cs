@@ -1,6 +1,7 @@
 using FleetTrack.DriverService.Models;
 using Microsoft.EntityFrameworkCore;
 using FleetTrack.DriverService.Data;
+using FleetTrack.DriverService.Enums;
 
 namespace FleetTrack.DriverService.Repositories
 {
@@ -22,8 +23,7 @@ namespace FleetTrack.DriverService.Repositories
         }
          
         public Driver Add(Driver driver)
-        {
-            driver.Status = "Active";    
+        {     
             _db.Drivers.Add(driver);
             _db.SaveChanges();
             

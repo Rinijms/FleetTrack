@@ -1,6 +1,7 @@
 using FleetTrack.DriverService.Models;
 using FleetTrack.DriverService.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using FleetTrack.DriverService.Enums;
 
 namespace FleetTrack.DriverService.Controllers
 {
@@ -38,7 +39,7 @@ namespace FleetTrack.DriverService.Controllers
                 Name=request.Name,
                 Phone=request.Phone,
                 DriverCode=string.Empty,
-                Status=string.Empty
+                Status = DriverStatus.Active
             };
             
             var created = _repo.Add(driver);
