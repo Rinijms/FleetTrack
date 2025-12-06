@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using FleetTrack.TripService.Enums;
 namespace FleetTrack.TripService.Models
 {
     public class Trip
@@ -19,7 +19,7 @@ namespace FleetTrack.TripService.Models
 
         [Required]
         [MaxLength(30)]
-        public string Status { get; set; } = "Pending";
+        public TripStatus Status { get; set; } = TripStatus.Pending;
 
         // Vehicle is required only if your business rule needs it.
         [MaxLength(50)]

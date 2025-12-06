@@ -1,4 +1,5 @@
 using FleetTrack.TripService.Models;
+using FleetTrack.TripService.Enums;
 
 namespace FleetTrack.TripService.Repositories
 {
@@ -34,7 +35,7 @@ namespace FleetTrack.TripService.Repositories
                 return false;
 
             trip.DriverCode = driverCode;
-            trip.Status = "DriverAssigned";
+            trip.Status = TripStatus.DriverAssigned;
             return true;
         } 
         public Trip? Update(Trip trip)

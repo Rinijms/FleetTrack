@@ -7,5 +7,6 @@ namespace FleetTrack.DriverService.Repositories
         IEnumerable<Driver> GetAll();
         Driver? GetByDriverCode(string code);
         Driver Add(Driver driver);
+        Driver? UpdateStatus(UpdateDriverStatusDTO updateDTO);
     }
 }

@@ -10,16 +10,16 @@ public class DriverClient : IDriverClient
 
     public async Task<DriverDto?> GetDriverAsync(string driverCode)
     {
-        var response = await _http.GetAsync($"/drivers/{driverCode}");
+        var response = await _http.GetAsync($"/api/driver/{driverCode}");
         if (!response.IsSuccessStatusCode) return null;
 
         return await response.Content.ReadFromJsonAsync<DriverDto>();
     }
 
-    public async Task<bool> UpdateDriverStatusAsync(string driverCode, string newStatus)
+    public async Task<bool> UpdateDriverStatusAsync(string driverCode, int newStatus)
     {
-        var body = new { status = newStatus };
-        var response = await _http.PatchAsJsonAsync($"/drivers/{driverCode}/status", body);
+        var body = new { DriverCode=driverCode, Status = newStatus };
+        var response = await _http.PutAsJsonAsync($"/api/driver/updateStatus", body);
         return response.IsSuccessStatusCode;
     }
 }

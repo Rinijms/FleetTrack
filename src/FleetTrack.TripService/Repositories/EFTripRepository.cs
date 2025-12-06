@@ -1,6 +1,7 @@
 using FleetTrack.TripService.Models;
 using Microsoft.EntityFrameworkCore;
 using FleetTrack.TripService.Data;
+using FleetTrack.TripService.Enums;
 
 namespace FleetTrack.TripService.Repositories
 {
@@ -44,7 +45,7 @@ namespace FleetTrack.TripService.Repositories
             if (trip == null) return null;
 
             trip.DriverCode = driverCode;
-            trip.Status = "DriverAssigned";
+            trip.Status = TripStatus.DriverAssigned;
 
             _db.SaveChanges();
             return trip;

@@ -33,5 +33,17 @@ namespace FleetTrack.DriverService.Repositories
 
             return driver;
         }
+
+        public Driver UpdateStatus(UpdateDriverStatusDTO updateDTO)
+        {
+            var driver = GetByDriverCode(updateDTO.DriverCode)!;
+            driver.Status= updateDTO.Status;
+            
+            _db.Drivers.Update(driver);
+            _db.SaveChanges();
+
+            return driver;
+        }
+    
     }
 }

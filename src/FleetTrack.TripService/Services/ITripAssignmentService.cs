@@ -5,5 +5,5 @@ namespace FleetTrack.TripService.Services;
 
 public interface ITripAssignmentService
 {
-    Task<Trip> AssignDriverAsync(string tripCode, string driverCode);
+    Task<Trip> AssignDriverAsync(AssignDriverRequest assignDriver);
 }

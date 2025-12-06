@@ -45,5 +45,12 @@ namespace FleetTrack.DriverService.Controllers
             var created = _repo.Add(driver);
             return CreatedAtAction(nameof(GetByDriverCode), new { driverCode = created.DriverCode }, created);
         }
+
+    [HttpPut("updateStatus")]
+    public IActionResult UpdateStatus(UpdateDriverStatusDTO updateDTO)
+    { 
+        var updated = _repo.UpdateStatus(updateDTO);        
+        return NoContent();
+    }
     }
 }
