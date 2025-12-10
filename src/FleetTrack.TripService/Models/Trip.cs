@@ -34,7 +34,7 @@ namespace FleetTrack.TripService.Models
         public string EndLocation { get; set; } = string.Empty;
 
         [Required]
-        public DateTime StartTime { get; set; }
+        public DateTime StartTime { get; set; } = DateTime.UtcNow;
 
         public DateTime? EndTime { get; set; }
     }

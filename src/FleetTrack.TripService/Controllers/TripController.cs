@@ -39,7 +39,8 @@ namespace FleetTrack.TripService.Controllers
         {
             var trip = new Trip{ 
                 StartLocation =createTrip.StartLocation,
-                EndLocation = createTrip.EndLocation
+                EndLocation = createTrip.EndLocation,
+                StartTime= DateTime.UtcNow
             };
 
             var created = _repo.Add(trip);
@@ -66,25 +67,47 @@ namespace FleetTrack.TripService.Controllers
             }
         }
 
-[HttpPut("assign-vehicle")]
-public async Task<IActionResult> AssignVehicle([FromBody] AssignVehicleRequest assignVehicle)
-{
-    try
-    {
-        var result = await _assignmentService.AssignVehicleAsync(assignVehicle);
-        if (result == null)
-            return NotFound("Trip not found.");
+        [HttpPut("assign-vehicle")]
+        public async Task<IActionResult> AssignVehicle([FromBody] AssignVehicleRequest assignVehicle)
+        {
+            try
+            {
+                var result = await _assignmentService.AssignVehicleAsync(assignVehicle);
+                if (result == null)
+                    return NotFound("Trip not found.");
 
-        return Ok(new { message = "Vehicle assigned successfully." });
-    }
-    catch (KeyNotFoundException ex)
-    {
-        return NotFound(new { message = ex.Message });
-    }
-    catch (InvalidOperationException ex)
-    {
-        return BadRequest(new { message = ex.Message });
-    }
-}
+                return Ok(new { message = "Vehicle assigned successfully." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+    
+        [HttpPut("complete")]
+        public async Task<IActionResult> CompleteTrip([FromBody]CompleteTripRequest completeTrip)
+        {
+             try
+            {
+                var result = await _assignmentService.CompletedTrip(completeTrip);
+                if (result == null)
+                    return NotFound(new { message ="Trip not found."});
+
+                return Ok(new { message = "Trip completed successfully." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }

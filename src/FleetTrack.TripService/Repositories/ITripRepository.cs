@@ -8,6 +8,6 @@ namespace FleetTrack.TripService.Repositories
         Trip? GetByTripCode(string tripcode);
         Trip Add(Trip trip);
         Trip? AssignDriver(string tripCode, string driverCode);
-        public Trip? Update(Trip trip);
+        Trip? Update(Trip trip);
     }
 }

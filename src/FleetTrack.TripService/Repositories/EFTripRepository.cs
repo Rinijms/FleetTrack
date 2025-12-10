@@ -57,8 +57,10 @@ namespace FleetTrack.TripService.Repositories
                 return null;
 
             existing.DriverCode = trip.DriverCode;
+            existing.StartTime = trip.StartTime; 
             existing.StartTime = trip.StartTime;
             existing.EndTime = trip.EndTime;
+            existing.Status = trip.Status;
 
             _db.SaveChanges();
             return existing;

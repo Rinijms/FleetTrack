@@ -86,4 +86,54 @@ public class TripAssignmentService : ITripAssignmentService
 
         return trip;
     }
+
+    public async Task<Trip?> CompletedTrip(CompleteTripRequest completeTrip)
+    {
+        if (string.IsNullOrEmpty(completeTrip.TripCode))
+            throw new InvalidOperationException("TripCode is required");
+      
+        var trip = _repo.GetByTripCode(completeTrip.TripCode);
+        if (trip == null)
+            throw new KeyNotFoundException("Trip not found");        
+
+        // Validate current state: require at least a driver or vehicle was assigned depending on your business rules.
+        // Example: allow completion only if trip is not already completed
+        if (trip.Status == TripStatus.Completed)
+            throw new InvalidOperationException("Trip is already completed.");
+
+
+        // If there is an assigned driver — ensure driver exists and set to Active after completion
+        if (!string.IsNullOrEmpty(trip.DriverCode))
+        {
+            var driver = await _driverClient.GetDriverAsync(trip.DriverCode);
+            if (driver == null)
+                throw new KeyNotFoundException("Assigned driver not found in DriverService.");
+
+            // set driver back to Active
+            var driverUpdated = await _driverClient.UpdateDriverStatusAsync(trip.DriverCode, (int)DriverStatus.Active);
+            if (!driverUpdated)
+                throw new Exception("Failed to update driver status to Active.");
+        }
+
+        // If there is an assigned vehicle — ensure vehicle exists and set to Available after completion
+        if (!string.IsNullOrEmpty(trip.VehicleCode))
+        {
+            var vehicle = await _vehicleClient.GetVehicleAsync(trip.VehicleCode);
+            if (vehicle == null)
+                throw new KeyNotFoundException("Assigned vehicle not found in VehicleService.");
+
+            var vehicleUpdated = await _vehicleClient.UpdateVehicleStatusAsync(trip.VehicleCode, (int)VehicleStatus.Active);
+            if (!vehicleUpdated)
+                throw new Exception("Failed to update vehicle status to Active.");
+        } 
+ 
+        // All external updates succeeded; mark trip completed
+        trip.Status = TripStatus.Completed;
+        trip.EndTime = DateTime.UtcNow;
+
+        var updatedTrip = _repo.Update(trip); // your existing Update method persists changes
+        return updatedTrip;
+    }
+
+
 }

@@ -6,5 +6,6 @@ namespace FleetTrack.TripService.Services
     {
         Task<Trip> AssignDriverAsync(AssignDriverRequest assignDriver);
         Task<Trip> AssignVehicleAsync(AssignVehicleRequest request);
+        Task<Trip?> CompletedTrip(CompleteTripRequest completeTrip);
     }
 }
