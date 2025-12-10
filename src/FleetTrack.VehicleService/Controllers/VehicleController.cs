@@ -47,15 +47,11 @@ public class VehicleController : ControllerBase
 
         return CreatedAtAction(nameof(GetByCode), new { vehicleCode = created.VehicleCode }, created);
     }
-
-    [HttpPut("{vehicleCode}/status")]
-    public IActionResult UpdateStatus(string vehicleCode, [FromBody] string newStatus)
-    {
-        if (!Enum.TryParse<VehicleStatus>(newStatus,true,out var newstatus))
-         return BadRequest(new { error = "Invalid vehicle status" });
-
-        var ok = _repo.UpdateStatus(vehicleCode, newstatus);
-        if (!ok) return NotFound();
+ 
+    [HttpPut("UpdateStatus")]     
+    public IActionResult UpdateStatus(UpdateVehicleStatusDTO updateDTO)
+    { 
+        var ok = _repo.UpdateStatus(updateDTO);          
         return NoContent();
     }
 

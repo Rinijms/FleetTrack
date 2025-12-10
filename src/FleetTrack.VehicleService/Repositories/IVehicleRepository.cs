@@ -8,6 +8,6 @@ public interface IVehicleRepository
     Vehicle Add(Vehicle vehicle);
     IEnumerable<Vehicle> GetAll();
     Vehicle? GetByVehicleCode(string vehicleCode);
-    bool UpdateStatus(string vehicleCode, VehicleStatus newStatus); // returns true if updated
+    Vehicle UpdateStatus(UpdateVehicleStatusDTO updateStatus); // returns true if updated
     IEnumerable<VehicleStatusHistory> GetHistory(string vehicleCode);
 }

@@ -30,35 +30,31 @@ public class EFVehicleRepository : IVehicleRepository
     public Vehicle? GetByVehicleCode(string vehicleCode) =>
         _db.Vehicles.FirstOrDefault(v => v.VehicleCode == vehicleCode);
 
-    public bool UpdateStatus(string vehicleCode, VehicleStatus newStatus)
-    {
-        
-        var vehicle = GetByVehicleCode(vehicleCode);
-        if (vehicle == null) return false;
-
-        var oldStatus = vehicle.Status;
-
-        if (vehicle.Status == newStatus)
-            return false; // No change
-
-        // Update status
-        vehicle.Status = newStatus;     
-        
-        // Add history record
-        var history = new VehicleStatusHistory
+    public Vehicle UpdateStatus(UpdateVehicleStatusDTO updateDTO)
         {
-            VehicleId = vehicle.Id,
-            OldStatus = oldStatus,
-            NewStatus = newStatus,
-            ChangedAt = DateTime.UtcNow
-        };
+            
+            var vehicle = GetByVehicleCode(updateDTO.VehicleCode);      
 
-        _db.VehicleStatusHistory.Add(history);
-        _db.Vehicles.Update(vehicle);
-        _db.SaveChanges();
+            var oldStatus = vehicle.Status;
+                
+            // Update status
+            vehicle.Status = updateDTO.Status;     
+            
+            // Add history record
+            var history = new VehicleStatusHistory
+            {
+                VehicleId = vehicle.Id,
+                OldStatus = oldStatus,
+                NewStatus = updateDTO.Status,
+                ChangedAt = DateTime.UtcNow
+            };
 
-        return true;
-    }
+            _db.VehicleStatusHistory.Add(history);
+            _db.Vehicles.Update(vehicle);
+            _db.SaveChanges();                       
+
+            return vehicle;
+        }
 
     public IEnumerable<VehicleStatusHistory> GetHistory(string vehicleCode)
     {

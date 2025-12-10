@@ -5,6 +5,8 @@ namespace FleetTrack.TripService.Enums
         Pending=1,
         DriverAssigned=2,
         VehicleAssigned=3,
-        Completed =4
+        InProgress=4,
+        Completed =5,
+        Cancelled=6
     }
 }

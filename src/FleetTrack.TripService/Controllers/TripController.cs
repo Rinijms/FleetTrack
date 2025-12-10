@@ -66,6 +66,25 @@ namespace FleetTrack.TripService.Controllers
             }
         }
 
+[HttpPut("assign-vehicle")]
+public async Task<IActionResult> AssignVehicle([FromBody] AssignVehicleRequest assignVehicle)
+{
+    try
+    {
+        var result = await _assignmentService.AssignVehicleAsync(assignVehicle);
+        if (result == null)
+            return NotFound("Trip not found.");
 
+        return Ok(new { message = "Vehicle assigned successfully." });
+    }
+    catch (KeyNotFoundException ex)
+    {
+        return NotFound(new { message = ex.Message });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return BadRequest(new { message = ex.Message });
+    }
+}
     }
 }

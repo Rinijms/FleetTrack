@@ -1,9 +1,10 @@
 using FleetTrack.TripService.Models;
-
-namespace FleetTrack.TripService.Services;
-
-
-public interface ITripAssignmentService
+namespace FleetTrack.TripService.Services
 {
-    Task<Trip> AssignDriverAsync(AssignDriverRequest assignDriver);
+
+    public interface ITripAssignmentService
+    {
+        Task<Trip> AssignDriverAsync(AssignDriverRequest assignDriver);
+        Task<Trip> AssignVehicleAsync(AssignVehicleRequest request);
+    }
 }

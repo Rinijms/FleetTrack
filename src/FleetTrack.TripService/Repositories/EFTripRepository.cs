@@ -63,5 +63,18 @@ namespace FleetTrack.TripService.Repositories
             _db.SaveChanges();
             return existing;
         }
+
+        public Trip? AssignVehicle(string tripCode, string vehicleCode)
+        {
+            var trip = _db.Trips.FirstOrDefault(t => t.TripCode == tripCode);
+            if (trip == null) return null;
+
+            trip.VehicleCode = vehicleCode;
+            trip.Status = TripStatus.VehicleAssigned;
+
+            _db.SaveChanges();
+            return trip;
+        }
     }
+    
 }
