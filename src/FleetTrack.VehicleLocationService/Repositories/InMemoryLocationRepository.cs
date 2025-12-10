@@ -3,35 +3,35 @@ using System.Collections.Concurrent;
 
 namespace FleetTrack.VehicleLocationService.Repositories;
 
-public class InMemoryLocationRepository : ILocationRepository
+public class InMemoryLocationRepository
 {
     // simple thread-safe storage using concurrent dictionary with incremental id
-    private readonly ConcurrentDictionary<int, LocationRecord> _store = new();
+    private readonly ConcurrentDictionary<int, VehicleLocation> _store = new();
     private int _idCounter = 0;
 
-    public Task<LocationRecord> AddAsync(LocationRecord record, CancellationToken ct = default)
+    public Task<VehicleLocation> AddAsync(VehicleLocation record, CancellationToken ct = default)
     {
         var id = Interlocked.Increment(ref _idCounter);
         record.Id = id;
-        record.TimestampUtc = record.TimestampUtc == default ? DateTime.UtcNow : record.TimestampUtc;
+        record.TimeStampUtc = record.TimeStampUtc == default ? DateTime.UtcNow : record.TimeStampUtc;
         _store[id] = record;
         return Task.FromResult(record);
     }
 
-    public Task<IReadOnlyList<LocationRecord>> GetAllAsync(CancellationToken ct = default)
+    public Task<IReadOnlyList<VehicleLocation>> GetAllAsync(CancellationToken ct = default)
     {
-        var list = _store.Values.OrderByDescending(x => x.TimestampUtc).ToList().AsReadOnly();
-        return Task.FromResult((IReadOnlyList<LocationRecord>)list);
+        var list = _store.Values.OrderByDescending(x => x.TimeStampUtc).ToList().AsReadOnly();
+        return Task.FromResult((IReadOnlyList<VehicleLocation>)list);
     }
 
-    public Task<IReadOnlyList<LocationRecord>> GetByVehicleAsync(string vehicleId, CancellationToken ct = default)
+    public Task<IReadOnlyList<VehicleLocation>> GetByVehicleAsync(string vehicleId, CancellationToken ct = default)
     {
         var list = _store.Values
-            .Where(x => string.Equals(x.VehicleId, vehicleId, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(x => x.TimestampUtc)
+            .Where(x => string.Equals(x.VehicleCode, vehicleId, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(x => x.TimeStampUtc)
             .ToList()
             .AsReadOnly();
-        return Task.FromResult((IReadOnlyList<LocationRecord>)list);
+        return Task.FromResult((IReadOnlyList<VehicleLocation>)list);
     }
 
     public Task ClearAsync(CancellationToken ct = default)

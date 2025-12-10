@@ -1,11 +1,13 @@
 using FleetTrack.VehicleLocationService.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FleetTrack.VehicleLocationService.Repositories;
 
 public interface ILocationRepository
 {
-    Task<LocationRecord> AddAsync(LocationRecord record, CancellationToken ct = default);
-    Task<IReadOnlyList<LocationRecord>> GetAllAsync(CancellationToken ct = default);
-    Task<IReadOnlyList<LocationRecord>> GetByVehicleAsync(string vehicleId, CancellationToken ct = default);
-    Task ClearAsync(CancellationToken ct = default);
+    Task<VehicleLocation> AddAsync(VehicleLocation location);
+    Task<IEnumerable<VehicleLocation>> GetAllAsync(int limit = 100);
+    Task<VehicleLocation?> GetLatestByVehicleCodeAsync(string vehicleCode);
+    Task<IEnumerable<VehicleLocation>> GetHistoryByVehicleCodeAsync(string vehicleCode, int take = 100);
 }

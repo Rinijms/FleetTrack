@@ -1,65 +1,54 @@
 using Microsoft.AspNetCore.Mvc;
 using FleetTrack.VehicleLocationService.DTOs;
-using FleetTrack.VehicleLocationService.Models;
+using FleetTrack.VehicleLocationService.Services;
 using FleetTrack.VehicleLocationService.Repositories;
+using FleetTrack.VehicleLocationService.Models;
+using System.Threading.Tasks;
 
-namespace FleetTrack.VehicleLocationService.Controllers;
-
-[ApiController]
-[Route("api/locations")]
-public class LocationController : ControllerBase
+namespace FleetTrack.VehicleLocationService.Controllers
 {
-    private readonly ILocationRepository _repo;
-    private readonly ILogger<LocationController> _logger;
 
-    public LocationController(ILocationRepository repo, ILogger<LocationController> logger)
-    {
-        _repo = repo;
-        _logger = logger;
-    }
+    [ApiController]
+    [Route("api/locations")]
+    public class LocationController : ControllerBase
+    { 
+        private readonly ILocationService _service;
 
-    // POST /api/locations
-    [HttpPost]
-    public async Task<IActionResult> PostLocation([FromBody] VehicleLocationUpdateDTO dto, CancellationToken ct)
-    {
-        if (dto is null || string.IsNullOrWhiteSpace(dto.VehicleId))
-            return BadRequest(new { error = "vehicleId, latitude and longitude are required" });
-
-        var record = new LocationRecord
+        public LocationController(ILocationService service) => _service = service;
+       
+        // POST /api/locations
+        [HttpPost]
+        public async Task<IActionResult> PostLocation([FromBody] VehicleLocationUpdateDTO dto)
         {
-            VehicleId = dto.VehicleId,
-            Latitude = dto.Latitude,
-            Longitude = dto.Longitude,
-            TimestampUtc = DateTime.UtcNow
-        };
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var added = await _repo.AddAsync(record, ct);
+            var created = await _service.SaveLocationAsync(dto);
+            return CreatedAtAction(nameof(GetLatest), new { vehicleCode = created.VehicleCode }, created);
+           
+        }
 
-        _logger.LogInformation("Received location for {VehicleId} at {Lat},{Lon}", dto.VehicleId, dto.Latitude, dto.Longitude);
+        // GET /api/locations
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] int limit = 100)
+        {
+            var items = await _service.GetAllAsync(limit);
+            return Ok(items);
+        }
 
-        // NOTE: later we will publish a LocationUpdated event to message broker here
+        [HttpGet("{vehicleCode}/latest")]
+        public async Task<IActionResult> GetLatest(string vehicleCode)
+        {
+            var item = await _service.GetLatestAsync(vehicleCode);
+            if (item == null) return NotFound();
+            return Ok(item);
+        }
 
-        return CreatedAtAction(nameof(GetLocationsByVehicle), new { vehicleId = added.VehicleId }, added);
+        [HttpGet("{vehicleCode}/history")]
+        public async Task<IActionResult> GetHistory(string vehicleCode, [FromQuery] int take = 100)
+        {
+            var items = await _service.GetHistoryAsync(vehicleCode, take);
+            return Ok(items);
+        }
     }
 
-    // GET /api/locations
-    [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken ct)
-    {
-        var all = await _repo.GetAllAsync(ct);
-        return Ok(all);
-    }
-
-    // GET /api/locations/{vehicleId}
-    [HttpGet("{vehicleId}")]
-    public async Task<IActionResult> GetLocationsByVehicle(string vehicleId, CancellationToken ct)
-    {
-        var list = await _repo.GetByVehicleAsync(vehicleId, ct);
-        if (!list.Any()) return NotFound(new { message = "No locations found for vehicle" });
-        return Ok(list);
-    }
-
-    // GET /api/locations/health
-    [HttpGet("health")]
-    public IActionResult Health() => Ok(new { status = "ok", time = DateTime.UtcNow });
 }

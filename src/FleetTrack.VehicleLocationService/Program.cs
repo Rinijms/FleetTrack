@@ -1,15 +1,32 @@
+using FleetTrack.VehicleLocationService.Data;
+using FleetTrack.VehicleLocationService.Repositories;
+using FleetTrack.VehicleLocationService.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Configuration & Logging already present
 builder.Services.AddControllers()
-    .ConfigureApiBehaviorOptions(options => { /* keep default behavior for now */ });
+    .AddJsonOptions(opt =>
+    {
+        // safe defaults
+        opt.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
+ 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register repository (in-memory for now)
-builder.Services.AddSingleton<FleetTrack.VehicleLocationService.Repositories.ILocationRepository, 
-FleetTrack.VehicleLocationService.Repositories.InMemoryLocationRepository>();
+
+// DB
+var conn = builder.Configuration.GetConnectionString("VehicleLocationDb");
+builder.Services.AddDbContext<VehicleLocationDbContext>(options =>
+    options.UseSqlServer(conn));
+
+// DI - Register repository(EF) & Services
+builder.Services.AddScoped<ILocationRepository, EFLocationRepository>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+ 
 
 var app = builder.Build();
 
