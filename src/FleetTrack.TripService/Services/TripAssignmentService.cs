@@ -1,6 +1,8 @@
 using FleetTrack.TripService.Models;
 using FleetTrack.TripService.Repositories; 
 using FleetTrack.TripService.Enums;
+using FleetTrack.Shared.EventBus;
+using FleetTrack.Shared.Events;
 
 namespace FleetTrack.TripService.Services;
 
@@ -9,12 +11,13 @@ public class TripAssignmentService : ITripAssignmentService
     private readonly ITripRepository _repo;
     private readonly IDriverClient _driverClient;
     private readonly IVehicleClient _vehicleClient;
-
-    public TripAssignmentService(ITripRepository repo, IDriverClient driverClient,IVehicleClient vehicleClient)
+    private readonly IEventBusProducer _producer;
+    public TripAssignmentService(ITripRepository repo, IDriverClient driverClient,IVehicleClient vehicleClient, IEventBusProducer producer)
     {
         _repo = repo;
         _driverClient = driverClient;
         _vehicleClient = vehicleClient;
+        _producer= producer;
     }
 
     public async Task<Trip> AssignDriverAsync(AssignDriverRequest assignDriver)
@@ -115,7 +118,7 @@ public class TripAssignmentService : ITripAssignmentService
                 throw new Exception("Failed to update driver status to Active.");
         }
 
-        // If there is an assigned vehicle — ensure vehicle exists and set to Available after completion
+        /*// If there is an assigned vehicle — ensure vehicle exists and set to Available after completion
         if (!string.IsNullOrEmpty(trip.VehicleCode))
         {
             var vehicle = await _vehicleClient.GetVehicleAsync(trip.VehicleCode);
@@ -125,13 +128,23 @@ public class TripAssignmentService : ITripAssignmentService
             var vehicleUpdated = await _vehicleClient.UpdateVehicleStatusAsync(trip.VehicleCode, (int)VehicleStatus.Active);
             if (!vehicleUpdated)
                 throw new Exception("Failed to update vehicle status to Active.");
-        } 
+        } */
  
         // All external updates succeeded; mark trip completed
         trip.Status = TripStatus.Completed;
         trip.EndTime = DateTime.UtcNow;
 
         var updatedTrip = _repo.Update(trip); // your existing Update method persists changes
+
+        var eventCompleted =new TripCompletedEvent
+        {
+            TripCode = trip.TripCode,
+            DriverCode = trip.DriverCode?? "",
+            VehicleCode = trip.VehicleCode ?? "",
+            CompletedAt = trip.EndTime!.Value
+        };
+
+        await _producer.PublishAsync(eventCompleted);
         return updatedTrip;
     }
 

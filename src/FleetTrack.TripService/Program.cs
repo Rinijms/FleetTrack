@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using FleetTrack.TripService.Data;
 using FleetTrack.TripService.Services;
 using FleetTrack.TripService.Repositories;
+using FleetTrack.Shared.Events;
+using FleetTrack.Shared.EventBus;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers + Swagger
@@ -31,6 +34,16 @@ builder.Services.AddScoped<ITripAssignmentService, TripAssignmentService>();
 
 builder.Services.AddDbContext<TripDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TripDb")));
+
+//builder.Services.AddSingleton<IEventBus, InMemoryEventBus>();
+builder.Services.AddSingleton<IEventBusProducer>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var conn = config["RabbitMq:ConnectionString"];
+    var exchange = config["RabbitMq:Exchange"];
+
+    return new RabbitMqProducer(conn!, exchange!);
+});
 
 var app = builder.Build();
 

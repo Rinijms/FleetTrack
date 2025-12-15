@@ -35,7 +35,7 @@ public class EFVehicleRepository : IVehicleRepository
             
             var vehicle = GetByVehicleCode(updateDTO.VehicleCode);      
 
-            var oldStatus = vehicle.Status;
+            var oldStatus = vehicle!.Status;
                 
             // Update status
             vehicle.Status = updateDTO.Status;     

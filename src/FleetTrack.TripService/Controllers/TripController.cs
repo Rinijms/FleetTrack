@@ -1,3 +1,4 @@
+using FleetTrack.Shared.EventBus;
 using FleetTrack.TripService.Models;
 using FleetTrack.TripService.Repositories;
 using FleetTrack.TripService.Services;
@@ -12,12 +13,15 @@ namespace FleetTrack.TripService.Controllers
     {
         private readonly ITripRepository _repo;
         private readonly ITripAssignmentService _assignmentService;
+        private readonly IEventBusProducer _eventBus;
 
-        public TripController(ITripRepository repo, ITripAssignmentService assignmentService)
+        public TripController(ITripRepository repo, ITripAssignmentService assignmentService,IEventBusProducer eventBus)
         {
             _repo = repo;
             _assignmentService = assignmentService;
+            _eventBus=eventBus;
         }
+        
         [HttpGet]
         public IActionResult GetAll()
         {
