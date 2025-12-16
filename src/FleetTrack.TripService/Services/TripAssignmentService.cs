@@ -104,6 +104,8 @@ public class TripAssignmentService : ITripAssignmentService
         if (trip.Status == TripStatus.Completed)
             throw new InvalidOperationException("Trip is already completed.");
 
+        
+        /*BEGIN OF COMMENTING - Vehicle & Driver will be made ACTIVE again via Events
 
         // If there is an assigned driver — ensure driver exists and set to Active after completion
         if (!string.IsNullOrEmpty(trip.DriverCode))
@@ -116,9 +118,9 @@ public class TripAssignmentService : ITripAssignmentService
             var driverUpdated = await _driverClient.UpdateDriverStatusAsync(trip.DriverCode, (int)DriverStatus.Active);
             if (!driverUpdated)
                 throw new Exception("Failed to update driver status to Active.");
-        }
-
-        /*// If there is an assigned vehicle — ensure vehicle exists and set to Available after completion
+        } 
+        
+        // If there is an assigned vehicle — ensure vehicle exists and set to Available after completion
         if (!string.IsNullOrEmpty(trip.VehicleCode))
         {
             var vehicle = await _vehicleClient.GetVehicleAsync(trip.VehicleCode);
@@ -128,7 +130,9 @@ public class TripAssignmentService : ITripAssignmentService
             var vehicleUpdated = await _vehicleClient.UpdateVehicleStatusAsync(trip.VehicleCode, (int)VehicleStatus.Active);
             if (!vehicleUpdated)
                 throw new Exception("Failed to update vehicle status to Active.");
-        } */
+        } 
+        
+        END OF COMMENTING*/
  
         // All external updates succeeded; mark trip completed
         trip.Status = TripStatus.Completed;
@@ -136,6 +140,7 @@ public class TripAssignmentService : ITripAssignmentService
 
         var updatedTrip = _repo.Update(trip); // your existing Update method persists changes
 
+        //Publishing the message to CLOUDAMQP - RabbitMQ
         var eventCompleted =new TripCompletedEvent
         {
             TripCode = trip.TripCode,
