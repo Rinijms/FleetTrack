@@ -2,11 +2,10 @@ using System.Text;
 using System.Text.Json;
 using FleetTrack.DriverService.Data;
 using FleetTrack.DriverService.Enums;
-using FleetTrack.Shared.Events;
+using FleetTrack.Shared.EventBus;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using FleetTrack.Shared.EventBus;
 
 namespace FleetTrack.DriverService.Messaging;
 
@@ -18,6 +17,8 @@ public class TripCompletedConsumer : BackgroundService
     private IConnection? _connection;
     private IModel? _channel;
  
+    private const string QueueName = "Driver.Trip.Completed";    
+
     public TripCompletedConsumer(
         IServiceScopeFactory scopeFactory,
         IConfiguration config)
@@ -42,7 +43,11 @@ public class TripCompletedConsumer : BackgroundService
             type: ExchangeType.Fanout,
             durable: true);
 
-        var QueueName = _channel.QueueDeclare().QueueName;
+        _channel.QueueDeclare(
+            queue: QueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false);
 
         _channel.QueueBind(
             queue: QueueName,

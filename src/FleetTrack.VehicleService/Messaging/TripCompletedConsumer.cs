@@ -16,6 +16,8 @@ public class TripCompletedConsumer : BackgroundService
     private readonly IServiceScopeFactory _scopeFactory;
     private IConnection? _connection;
     private IModel? _channel;
+     
+    private const string QueueName = "Vehicle.Trip.Completed";
 
     public TripCompletedConsumer(
         IConfiguration configuration,
@@ -41,11 +43,15 @@ public class TripCompletedConsumer : BackgroundService
             type: ExchangeType.Fanout,
             durable: true
         );
-
-        var queueName = _channel.QueueDeclare().QueueName;
+ 
+        _channel.QueueDeclare(
+            queue: QueueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false);
 
         _channel.QueueBind(
-            queue: queueName,
+            queue: QueueName,
             exchange: exchangeConfig,
             routingKey: ""
         );
@@ -81,7 +87,7 @@ public class TripCompletedConsumer : BackgroundService
         };
 
         _channel.BasicConsume(
-            queue: queueName,
+            queue: QueueName,
             autoAck: true,
             consumer: consumer
         );
